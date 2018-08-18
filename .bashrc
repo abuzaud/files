@@ -56,8 +56,18 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
+## Installation de git si pas installé
+command -v git >/dev/null 2>&1 ||
+{ echo >&2 "Git n'est pas installé. Installation en cours..";
+  apt install git
+}
+
+parse_git_branch() { git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/' ; }
+
 if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\e[01;33m\]\u\[\e[01;32m\]@\h\[\e[00m\]:\[\e[01;96m\]\w\[\e[00m\]\$ '
+    PS1="${debian_chroot:+($debian_chroot)}\[\e[01;33m\]\u\[\e[01;32m\]@\h\[\e[00m\]:\[\e[01;96m\]\w\[\033[33m\]\$(parse_git_branch)\[\e[00m\]\\n$ "
+
+    #PS1='${debian_chroot:+($debian_chroot)}\[\e[01;33m\]\u\[\e[01;32m\]@\h\[\e[00m\]:\[\e[01;96m\]\w\[\e[00m\]\$ '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
